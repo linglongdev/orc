@@ -1,0 +1,41 @@
+package:
+  id: orc
+  name: orc
+  version: 0.4.28
+  kind: lib
+  description: |
+    orc.
+
+base:
+  id: org.deepin.base
+  version: 20.5.0
+
+source:
+  kind: git
+  url: https://github.com/deepin-community/orc.git
+  version: master
+  commit: 074e9cb715dd0c073c875596af27e38e62a1912e
+  patch: []
+variables:
+  conf_args: |
+    --prefix=${PREFIX} \
+    --libdir=lib/${TRIPLET}
+  extra_args: |
+    -Ddisable_gtkdoc=true \
+    -Ddisable_tests=true
+
+
+build:
+  kind: manual
+  manual:
+    configure: |
+      mkdir build_dir1
+      mkdir build_dir2
+      meson ${conf_args} ${extra_args} --default-library=shared build_dir1 
+      meson ${conf_args} ${extra_args} --default-library=static build_dir2
+    build: |
+      cd build_dir1 && ninja ${jobs} && cd ..
+      cd build_dir2 && ninja ${jobs} && cd ..
+    install: |
+      cd build_dir1 && ninja install && cd ..
+      cd build_dir2 && ninja install
